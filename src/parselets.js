@@ -7,7 +7,9 @@ const precedenceList = [
   'COMPARISON',
   'LP_PRODUCT',
   'SUM',
+  'DIVISION',
   'PRODUCT',
+  'EXPONET',
   'SCRIPT',
   'PREFIX',
   'POSTFIX',
@@ -84,7 +86,8 @@ const boundedOperation = (precedence, name) => {
       parser.consume('OF');
       const body = parser.parseExpression();
       return {
-        type: name,
+        type: 'BOUNDED',
+        operator: name,
         bounds,
         value: body,
       };
@@ -117,6 +120,7 @@ const prefixParselets = {
   },
   INTEGRAL: boundedOperation(p.prefix, 'INTEGRAL'),
   SUM: boundedOperation(p.prefix, 'SUM'),
+  PRODUCTION: boundedOperation(p.prefix, 'PRODUCTION'),
   SUPER: prefix(p.PREFIX),
   SUB: prefix(p.PREFIX),
 };
@@ -132,7 +136,9 @@ const infixParselets = {
   MINUS: infixLeft(p.SUM),
   LP_TIMES: infixLeft(p.LP_PRODUCT),
   TIMES: infixLeft(p.PRODUCT),
-  DIVIDE: infixLeft(p.PRODUCT),
+  DIVIDE: infixLeft(p.DIVISION),
+  SUPER: infixLeft(p.EXPONENT),
+  SUB: infixLeft(p.EXPONENT),
   AT: postfix(p.POSTFIX),
   MESH: postfix(p.POSTFIX),
 };

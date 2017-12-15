@@ -31,6 +31,11 @@ const punctuators = [
     nameBreak: false,
   },
   {
+    name: 'PRODUCTION',
+    pattern: /^production/i,
+    nameBreak: false,
+  },
+  {
     name: 'TO',
     pattern: /^to/i,
     nameBreak: false,

@@ -102,13 +102,14 @@ describe('Parser', () => {
     });
   });
 
-  it('should understand integrals', () => {
+  it('should understand integrals with bounds', () => {
     const parser = new Parser('int 0 to \\pi, infinity of x');
     const parseTree = parser.parseExpression();
 
     parseTree.should.not.be.null;
     parseTree.should.eql({
-      type: 'INTEGRAL',
+      type: 'BOUNDED',
+      operator: 'INTEGRAL',
       bounds: [
         {
           type: 'BINARY',
@@ -126,13 +127,27 @@ describe('Parser', () => {
     });
   });
 
-  it('should understand sums', () => {
+  it('should understand integrals without bounds', () => {
+    const parser = new Parser('int of x');
+    const parseTree = parser.parseExpression();
+
+    parseTree.should.not.be.null;
+    parseTree.should.eql({
+      type: 'BOUNDED',
+      operator: 'INTEGRAL',
+      bounds: [],
+      value: raw('x'),
+    });
+  });
+
+  it('should understand sums with bounds', () => {
     const parser = new Parser('sum i = 0 to n of i');
     const parseTree = parser.parseExpression();
 
     parseTree.should.not.be.null;
     parseTree.should.eql({
-      type: 'SUM',
+      type: 'BOUNDED',
+      operator: 'SUM',
       bounds: [
         {
           type: 'BINARY',
@@ -147,6 +162,57 @@ describe('Parser', () => {
         },
       ],
       value: raw('i'),
+    });
+  });
+
+  it('should understand sums without bounds', () => {
+    const parser = new Parser('sum of x');
+    const parseTree = parser.parseExpression();
+
+    parseTree.should.not.be.null;
+    parseTree.should.eql({
+      type: 'BOUNDED',
+      operator: 'SUM',
+      bounds: [],
+      value: raw('x'),
+    });
+  });
+
+  it('should understand productions', () => {
+    const parser = new Parser('production i = 0 to n of i');
+    const parseTree = parser.parseExpression();
+
+    parseTree.should.not.be.null;
+    parseTree.should.eql({
+      type: 'BOUNDED',
+      operator: 'PRODUCTION',
+      bounds: [
+        {
+          type: 'BINARY',
+          operator: 'TO',
+          left: {
+            type: 'BINARY',
+            operator: 'EQUAL',
+            left: raw('i'),
+            right: raw('0'),
+          },
+          right: raw('n'),
+        },
+      ],
+      value: raw('i'),
+    });
+  });
+
+  it('should understand productions without bounds', () => {
+    const parser = new Parser('production of x');
+    const parseTree = parser.parseExpression();
+
+    parseTree.should.not.be.null;
+    parseTree.should.eql({
+      type: 'BOUNDED',
+      operator: 'PRODUCTION',
+      bounds: [],
+      value: raw('x'),
     });
   });
 });
